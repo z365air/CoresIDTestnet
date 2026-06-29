@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f8ff;
+  --foreground: #0c1330;
+  --surface: #f4f8ff;
+  --ink: #0c1330;
+  --muted: #5d698a;
+  --line: rgba(27, 54, 166, 0.12);
+  --accent: #2350ff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--surface);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(244, 248, 255, 0.92)),
+    var(--surface);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+a {
+  color: inherit;
+}
+
+input::placeholder {
+  color: rgba(188, 210, 255, 0.48);
+}
+
+.tap-result {
+  display: none;
+}
+
+.tap-result:target {
+  display: block;
+}
+
+.basedone-art-rain-column {
+  animation: basedone-art-rain var(--rain-duration) linear infinite;
+  animation-delay: var(--rain-delay);
+  transform-origin: center;
+  will-change: transform;
+}
+
+@keyframes basedone-art-rain {
+  from {
+    transform: translateY(-2.8%);
+  }
+  to {
+    transform: translateY(4.8%);
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "CoresID — Level 2",
+  "description": "A Core wallet with 2 Seeds linked. Level 2 of 5. Each new Seed levels up this soulbound NFT.",
+  "image": "https://basedone-seven.vercel.app/metadata/level2.png",
+  "attributes": [
+    { "trait_type": "Level", "value": 2 },
+    { "trait_type": "Max Level", "value": 5 },
+    { "trait_type": "Seeds", "value": 2 }
+  ]
+}

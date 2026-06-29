@@ -1,0 +1,14 @@
+{
+  "name": "CoresID — Level 5",
+  "description": "A Core wallet with 5 Seeds linked. Level 5 of 5 — MAX LEVEL. This Core has a fully established onchain identity.",
+  "image": "https://basedone-seven.vercel.app/metadata/level5.png",
+  "features": [
+    "5 Seeds linked",
+    "Identity fully established"
+  ],
+  "attributes": [
+    { "trait_type": "Level", "value": 5 },
+    { "trait_type": "Max Level", "value": 5 },
+    { "trait_type": "Seeds", "value": 5 }
+  ]
+}
