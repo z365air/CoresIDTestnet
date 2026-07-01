@@ -883,14 +883,29 @@ export function CoresIDApp() {
           </div>
 
           {/* Seed List header */}
-          <div className="mb-2">
-            <p className="text-sm text-[var(--foreground)]">
-              <strong>Seed List</strong> <span className="text-[var(--muted)]">|</span>{" "}
-              <span className="font-normal text-[var(--muted)]">Track and manage your seeds</span>
-            </p>
-            <p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">
-              Drag the seed number right (&rarr;) to manage
-            </p>
+          <div className="mb-2 flex items-start justify-between">
+            <div>
+              <p className="text-sm text-[var(--foreground)]">
+                <strong>Seed List</strong> <span className="text-[var(--muted)]">|</span>{" "}
+                <span className="font-normal text-[var(--muted)]">Track and manage your seeds</span>
+              </p>
+              <p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">
+                Drag the seed number right (&rarr;) to manage
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setRefreshKey((k) => k + 1)}
+              className="flex-shrink-0 rounded-full p-2 text-[var(--muted)] transition-all hover:bg-[var(--line)] hover:text-[var(--foreground)] active:rotate-45"
+              title="Refresh seed list"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10" />
+                <polyline points="1 20 1 14 7 14" />
+                <path d="M23 10a9 9 0 0 0-15.7-5.3L4 8" />
+                <path d="M1 14a9 9 0 0 0 15.7 5.3L20 16" />
+              </svg>
+            </button>
           </div>
 
           {/* Seed List */}
@@ -990,13 +1005,12 @@ export function CoresIDApp() {
                         if (!d) return;
                         d.slot.style.transition = "";
                         d.slot.style.boxShadow = "0 2px 6px rgba(0,0,0,0.08)";
+                        d.slot.style.transform = "";
+                        d.overlay.style.clipPath = "inset(0 100% 0 0)";
                         dragRef.current = null;
                         if (d.dx >= 80) {
                           if (action === "revoke") handleRevoke(fullAddr as Address);
                           else if (action === "cancel") handleCancelNomination(fullAddr as Address);
-                        } else {
-                          d.slot.style.transform = "";
-                          d.overlay.style.clipPath = "inset(0 100% 0 0)";
                         }
                       }}
                     >
