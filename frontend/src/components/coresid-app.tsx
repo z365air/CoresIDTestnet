@@ -662,7 +662,7 @@ export function CoresIDApp() {
           </div>
 
           {/* Tabs */}
-          <div className="mb-8 flex gap-2">
+          <div className="mb-2 flex gap-2">
             {(["core", "seed"] as const).map((tab) => (
               <button
                 key={tab}
@@ -680,6 +680,8 @@ export function CoresIDApp() {
               </button>
             ))}
           </div>
+
+          <p className="mb-6 text-center text-xs text-[var(--muted)]">Pick your role and Continue below</p>
 
           {/* Logo (when nothing selected) */}
           {selectedRole === null && (
@@ -743,23 +745,6 @@ export function CoresIDApp() {
     return (
       <main className="flex min-h-screen flex-col bg-[var(--surface)] px-4 py-6">
         <div className="flex w-full max-w-sm flex-col mx-auto flex-1">
-
-          {/* Mode tabs header */}
-          <div className="mb-4 flex gap-2">
-            <button
-              type="button"
-              className="flex-1 h-11 rounded-2xl border-2 border-transparent bg-[linear-gradient(135deg,#2953ff,#5ca4ff)] text-sm font-bold text-white shadow-[0_4px_20px_rgba(41,83,255,0.25)] tracking-wider"
-            >
-              CORE
-            </button>
-            <button
-              type="button"
-              onClick={() => { setStep("seed"); setSelectedRole("seed"); }}
-              className="flex-1 h-11 rounded-2xl border-2 border-[var(--line)] bg-white text-sm font-bold text-[var(--muted)] tracking-wider hover:border-[var(--muted)]"
-            >
-              SEED
-            </button>
-          </div>
 
           {/* Core address */}
           <div className="mb-3 flex items-center justify-between">
@@ -1120,14 +1105,14 @@ export function CoresIDApp() {
             </a>
           )}
 
-          {/* Disconnect at bottom */}
+          {/* Go back to role selection */}
           <div className="mt-auto pt-4">
             <button
               type="button"
-              onClick={handleDisconnect}
-              className="w-full h-11 rounded-2xl border border-[var(--line)] bg-white text-sm font-semibold text-[var(--muted)] transition-all hover:border-red-300 hover:text-red-500 hover:bg-red-50"
+              onClick={() => setStep("onboarding")}
+              className="w-full h-11 rounded-2xl border border-[var(--line)] bg-white text-sm font-semibold text-[var(--muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-blue-50"
             >
-              Disconnect
+              Go Back to Role Selection
             </button>
           </div>
         </div>
@@ -1139,23 +1124,6 @@ export function CoresIDApp() {
   return (
     <main className="flex min-h-screen flex-col bg-[var(--surface)] px-4 py-6">
       <div className="flex w-full max-w-sm flex-col mx-auto flex-1">
-
-        {/* Mode tabs */}
-        <div className="mb-4 flex gap-2">
-          <button
-            type="button"
-            onClick={() => { setStep("core"); setSelectedRole("core"); }}
-            className="flex-1 h-11 rounded-2xl border-2 border-[var(--line)] bg-white text-sm font-bold text-[var(--muted)] tracking-wider hover:border-[var(--muted)]"
-          >
-            CORE
-          </button>
-          <button
-            type="button"
-            className="flex-1 h-11 rounded-2xl border-2 border-transparent bg-[linear-gradient(135deg,#2953ff,#5ca4ff)] text-sm font-bold text-white shadow-[0_4px_20px_rgba(41,83,255,0.25)] tracking-wider"
-          >
-            SEED
-          </button>
-        </div>
 
         {/* Seed address */}
         <div className="mb-4">
@@ -1238,14 +1206,14 @@ export function CoresIDApp() {
           </>
         )}
 
-        {/* Disconnect at bottom */}
+        {/* Go back to role selection */}
         <div className="mt-auto pt-4">
           <button
             type="button"
-            onClick={handleDisconnect}
-            className="w-full h-11 rounded-2xl border border-[var(--line)] bg-white text-sm font-semibold text-[var(--muted)] transition-all hover:border-red-300 hover:text-red-500 hover:bg-red-50"
+            onClick={() => setStep("onboarding")}
+            className="w-full h-11 rounded-2xl border border-[var(--line)] bg-white text-sm font-semibold text-[var(--muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-blue-50"
           >
-            Disconnect
+            Go Back to Role Selection
           </button>
         </div>
       </div>
