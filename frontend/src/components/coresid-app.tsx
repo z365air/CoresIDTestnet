@@ -975,155 +975,139 @@ export function CoresIDApp() {
             </div>
           </div>
 
-          {/* Seed List header */}
-          <div className="mb-2 flex items-start justify-between">
-            <div>
-              <p className="text-sm text-[var(--foreground)]">
-                <strong>Seed List</strong> <span className="text-[var(--muted)]">|</span>{" "}
-                <span className="font-normal text-[var(--muted)]">Track and manage your seeds</span>
-              </p>
-              <p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">
-                Drag the seed number right (&rarr;) to manage
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setRefreshKey((k) => k + 1)}
-              className="flex-shrink-0 rounded-full p-2 text-[var(--muted)] transition-all hover:bg-[var(--line)] hover:text-[var(--foreground)] active:rotate-45"
-              title="Refresh seed list"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="23 4 23 10 17 10" />
-                <polyline points="1 20 1 14 7 14" />
-                <path d="M23 10a9 9 0 0 0-15.7-5.3L4 8" />
-                <path d="M1 14a9 9 0 0 0 15.7 5.3L20 16" />
-              </svg>
-            </button>
-          </div>
+          {/* Seed List — only show when there are seeds to manage */}
+          {(linkedSeeds.length > 0 || pendingSeeds.length > 0) && (
+            <>
+              <div className="mb-2 flex items-start justify-between">
+                <div>
+                  <p className="text-sm text-[var(--foreground)]">
+                    <strong>Seed List</strong> <span className="text-[var(--muted)]">|</span>{" "}
+                    <span className="font-normal text-[var(--muted)]">Track and manage your seeds</span>
+                  </p>
+                  <p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">
+                    Drag the seed number right (&rarr;) to manage
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRefreshKey((k) => k + 1)}
+                  className="flex-shrink-0 rounded-full p-2 text-[var(--muted)] transition-all hover:bg-[var(--line)] hover:text-[var(--foreground)] active:rotate-45"
+                  title="Refresh seed list"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="23 4 23 10 17 10" />
+                    <polyline points="1 20 1 14 7 14" />
+                    <path d="M23 10a9 9 0 0 0-15.7-5.3L4 8" />
+                    <path d="M1 14a9 9 0 0 0 15.7 5.3L20 16" />
+                  </svg>
+                </button>
+              </div>
 
-          {/* Seed List */}
-          <div className="mb-4 flex flex-col gap-2 select-none">
-            {Array.from({ length: 5 }, (_, i) => {
-              const slotNum = i + 1;
-              let type: "linked" | "pending" | "empty" = "empty";
-              let addr = "";
+              <div className="mb-4 flex flex-col gap-2 select-none">
+                {Array.from({ length: linkedSeeds.length + pendingSeeds.length }, (_, i) => {
+                  const type: "linked" | "pending" = i < linkedSeeds.length ? "linked" : "pending";
+                  const addr = type === "linked" ? linkedSeeds[i] : pendingSeeds[i - linkedSeeds.length];
+                  const slotNum = i + 1;
+                  const action = type === "linked" ? "revoke" : "cancel";
+                  const fullAddr = addr;
 
-              if (i < linkedSeeds.length) {
-                type = "linked";
-                addr = linkedSeeds[i];
-              } else if (i < linkedSeeds.length + pendingSeeds.length) {
-                type = "pending";
-                addr = pendingSeeds[i - linkedSeeds.length];
-              }
-
-              const action = type === "linked" ? "revoke" : type === "pending" ? "cancel" : "";
-              const isDraggable = action !== "";
-              const fullAddr = addr;
-
-              return (
-                <div key={i} className="seed-swipe-wrap relative rounded-xl overflow-hidden">
-                  {/* Wipe overlay (behind card, revealed on drag) */}
-                  {isDraggable && (
-                    <div
-                      className="wipe-overlay absolute inset-0 z-[2] pointer-events-none"
-                      style={{
-                        backdropFilter: "blur(6px)",
-                        WebkitBackdropFilter: "blur(6px)",
-                        background: type === "linked"
-                          ? "rgba(239,68,68,0.15)"
-                          : "rgba(245,158,11,0.15)",
-                        clipPath: "inset(0 100% 0 0)",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
-                      <span
+                  return (
+                    <div key={i} className="seed-swipe-wrap relative rounded-xl overflow-hidden">
+                      {/* Wipe overlay (behind card, revealed on drag) */}
+                      <div
+                        className="wipe-overlay absolute inset-0 z-[2] pointer-events-none"
                         style={{
-                          paddingLeft: "52px",
-                          fontSize: "11px",
-                          fontWeight: 700,
-                          color: type === "linked" ? "#dc2626" : "#b45309",
-                          letterSpacing: "0.03em",
-                          whiteSpace: "nowrap",
+                          backdropFilter: "blur(6px)",
+                          WebkitBackdropFilter: "blur(6px)",
+                          background: type === "linked"
+                            ? "rgba(239,68,68,0.15)"
+                            : "rgba(245,158,11,0.15)",
+                          clipPath: "inset(0 100% 0 0)",
+                          display: "flex",
+                          alignItems: "center",
                         }}
                       >
-                        &rarr; {type === "linked" ? "Revoke" : "Cancel"}
-                      </span>
-                    </div>
-                  )}
+                        <span
+                          style={{
+                            paddingLeft: "52px",
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            color: type === "linked" ? "#dc2626" : "#b45309",
+                            letterSpacing: "0.03em",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          &rarr; {type === "linked" ? "Revoke" : "Cancel"}
+                        </span>
+                      </div>
 
-                  <div
-                    className={`seed-card relative z-[1] flex items-center gap-3 rounded-xl border bg-[var(--btn-bg)] px-4 py-3.5 ${
-                      type === "empty" ? "border-[var(--line)]" : "border-[var(--line)]"
-                    } ${type === "empty" ? "" : ""}`}
-                    style={{ overflow: "hidden" }}
-                  >
-                    {/* Slot badge (drag handle) */}
-                    <div
-                      className={`slot flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg text-sm font-bold select-none ${
-                        type === "linked"
-                          ? "bg-[var(--accent)] text-white cursor-grab active:cursor-grabbing"
-                          : type === "pending"
-                          ? "bg-amber-400 text-white cursor-grab active:cursor-grabbing"
-                          : "bg-[var(--line)] text-[var(--muted)]"
-                      }`}
-                      style={{
-                        boxShadow: isDraggable ? "0 2px 6px rgba(0,0,0,0.08)" : "none",
-                        touchAction: isDraggable ? "none" : "auto",
-                        zIndex: 3,
-                        position: "relative",
-                        transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s",
-                      }}
-                      onPointerDown={(e) => {
-                        if (!isDraggable) return;
-                        const slot = e.currentTarget;
-                        const card = slot.closest('.seed-card') as HTMLElement;
-                        const overlay = card?.parentElement?.querySelector('.wipe-overlay') as HTMLElement;
-                        if (!card || !overlay) return;
-                        slot.setPointerCapture(e.pointerId);
-                        slot.style.transition = "none";
-                        slot.style.boxShadow = "0 4px 16px rgba(0,0,0,0.18)";
-                        dragRef.current = { slot, overlay, startX: e.clientX, dx: 0 };
-                      }}
-                      onPointerMove={(e) => {
-                        const d = dragRef.current;
-                        if (!d) return;
-                        const dx = Math.max(0, Math.min(300, e.clientX - d.startX));
-                        d.dx = dx;
-                        d.slot.style.transform = `translateX(${dx}px)`;
-                        d.overlay.style.clipPath = `inset(0 ${100 - (dx / 300) * 100}% 0 0)`;
-                      }}
-                      onPointerUp={(e) => {
-                        const d = dragRef.current;
-                        if (!d) return;
-                        d.slot.style.transition = "";
-                        d.slot.style.boxShadow = "0 2px 6px rgba(0,0,0,0.08)";
-                        d.slot.style.transform = "";
-                        d.overlay.style.clipPath = "inset(0 100% 0 0)";
-                        dragRef.current = null;
-                        if (d.dx >= 80) {
-                          if (action === "revoke") handleRevoke(fullAddr as Address);
-                          else if (action === "cancel") handleCancelNomination(fullAddr as Address);
-                        }
-                      }}
-                    >
-                      {slotNum}
-                    </div>
+                      <div
+                        className="seed-card relative z-[1] flex items-center gap-3 rounded-xl border border-[var(--line)] bg-[var(--btn-bg)] px-4 py-3.5"
+                        style={{ overflow: "hidden" }}
+                      >
+                        {/* Slot badge (drag handle) */}
+                        <div
+                          className={`slot flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg text-sm font-bold select-none ${
+                            type === "linked"
+                              ? "bg-emerald-500 text-white cursor-grab active:cursor-grabbing"
+                              : "bg-amber-400 text-white cursor-grab active:cursor-grabbing"
+                          }`}
+                          style={{
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                            touchAction: "none",
+                            zIndex: 3,
+                            position: "relative",
+                            transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s",
+                          }}
+                          onPointerDown={(e) => {
+                            const slot = e.currentTarget;
+                            const card = slot.closest('.seed-card') as HTMLElement;
+                            const overlay = card?.parentElement?.querySelector('.wipe-overlay') as HTMLElement;
+                            if (!card || !overlay) return;
+                            slot.setPointerCapture(e.pointerId);
+                            slot.style.transition = "none";
+                            slot.style.boxShadow = "0 4px 16px rgba(0,0,0,0.18)";
+                            dragRef.current = { slot, overlay, startX: e.clientX, dx: 0 };
+                          }}
+                          onPointerMove={(e) => {
+                            const d = dragRef.current;
+                            if (!d) return;
+                            const dx = Math.max(0, Math.min(300, e.clientX - d.startX));
+                            d.dx = dx;
+                            d.slot.style.transform = `translateX(${dx}px)`;
+                            d.overlay.style.clipPath = `inset(0 ${100 - (dx / 300) * 100}% 0 0)`;
+                          }}
+                          onPointerUp={(e) => {
+                            const d = dragRef.current;
+                            if (!d) return;
+                            d.slot.style.transition = "";
+                            d.slot.style.boxShadow = "0 2px 6px rgba(0,0,0,0.08)";
+                            d.slot.style.transform = "";
+                            d.overlay.style.clipPath = "inset(0 100% 0 0)";
+                            dragRef.current = null;
+                            if (d.dx >= 80) {
+                              if (action === "revoke") handleRevoke(fullAddr as Address);
+                              else if (action === "cancel") handleCancelNomination(fullAddr as Address);
+                            }
+                          }}
+                        >
+                          {slotNum}
+                        </div>
 
-                    {/* Address */}
-                    <div
-                      className={`flex-1 min-w-0 text-sm font-mono font-semibold pointer-events-none ${
-                        type === "empty" ? "text-[var(--muted)]" : "text-[var(--foreground)]"
-                      }`}
-                      style={{ position: "relative", zIndex: 1 }}
-                    >
-                      {type === "empty" ? "— empty —" : shortenAddress(addr)}
+                        {/* Address */}
+                        <div
+                          className="flex-1 min-w-0 text-sm font-mono font-semibold text-[var(--foreground)] pointer-events-none"
+                          style={{ position: "relative", zIndex: 1 }}
+                        >
+                          {shortenAddress(addr)}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
 
           {/* Nominate section (unchanged) */}
           {slotsFree > 0 && (
