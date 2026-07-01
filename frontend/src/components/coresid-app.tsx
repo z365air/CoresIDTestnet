@@ -196,6 +196,7 @@ export function CoresIDApp() {
 
   // ---- chain helpers ----
   const switchAttempted = useRef(false);
+  const providerRef = useRef<EIP1193Provider | null>(null);
 
   async function ensureCorrectChain(overrideChainId?: number) {
     const currentChainId = overrideChainId ?? chainIdConnected;
@@ -206,9 +207,11 @@ export function CoresIDApp() {
         await switchChainAsync({ chainId: CORESID_CHAIN_ID });
         return true;
       } catch {
-        // switch failed – try adding the chain
+        // switch failed – try adding the chain via the connector's provider
         try {
-          await (window as any).ethereum?.request({
+          const ethProvider = providerRef.current ?? (window as any).ethereum;
+          if (!ethProvider) return false;
+          await ethProvider.request({
             method: "wallet_addEthereumChain",
             params: [{
               chainId: `0x${(CORESID_CHAIN_ID as number).toString(16)}`,
@@ -262,8 +265,10 @@ export function CoresIDApp() {
       const client = await getConnectorClient(wagmiConfig, {
         connector: baseConnector,
       });
-      setProvider(client as unknown as EIP1193Provider);
-      await ensureChain(client as unknown as EIP1193Provider);
+      const rawProvider = await baseConnector.getProvider();
+      providerRef.current = rawProvider as EIP1193Provider;
+      setProvider(rawProvider as EIP1193Provider);
+      await ensureChain(rawProvider as EIP1193Provider);
       setStatus("Connected with Base.");
       setStep("role");
     } catch (error) {
@@ -284,8 +289,10 @@ export function CoresIDApp() {
       const client = await getConnectorClient(wagmiConfig, {
         connector: injectedConnector,
       });
-      setProvider(client as unknown as EIP1193Provider);
-      await ensureChain(client as unknown as EIP1193Provider);
+      const rawProvider = await injectedConnector.getProvider();
+      providerRef.current = rawProvider as EIP1193Provider;
+      setProvider(rawProvider as EIP1193Provider);
+      await ensureChain(rawProvider as EIP1193Provider);
       setStatus("Connected with browser wallet.");
       setStep("role");
     } catch (error) {
