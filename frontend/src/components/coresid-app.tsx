@@ -11,7 +11,7 @@ import {
 } from "wagmi";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Address, EIP1193Provider } from "viem";
-import { getConnectorClient, readContract } from "@wagmi/core";
+import { getConnectorClient, readContract, waitForTransactionReceipt } from "@wagmi/core";
 import { wagmiConfig } from "@/lib/wagmi-config";
 import {
   CORESID_CONTRACT_ADDRESS,
@@ -430,6 +430,8 @@ export function CoresIDApp() {
 
       setLastTxHash(tx);
       setLastTxLabel("Nominate");
+      setStatus("Waiting for confirmation...");
+      await waitForTransactionReceipt(wagmiConfig, { hash: tx, chainId: CORESID_CHAIN_ID });
       setStatus("Nominated successfully!");
       setNominateInputs([""]);
       setPendingSeeds((prev) => [...prev, ...validAddresses]);
@@ -458,6 +460,8 @@ export function CoresIDApp() {
 
       setLastTxHash(tx);
       setLastTxLabel("Cancel");
+      setStatus("Waiting for confirmation...");
+      await waitForTransactionReceipt(wagmiConfig, { hash: tx, chainId: CORESID_CHAIN_ID });
       setStatus("Nomination cancelled.");
       setRefreshKey((k) => k + 1);
     } catch (error) {
@@ -484,6 +488,8 @@ export function CoresIDApp() {
 
       setLastTxHash(tx);
       setLastTxLabel("Revoke");
+      setStatus("Waiting for confirmation...");
+      await waitForTransactionReceipt(wagmiConfig, { hash: tx, chainId: CORESID_CHAIN_ID });
       setStatus("Seed revoked. Level decreased.");
       setRefreshKey((k) => k + 1);
     } catch (error) {
@@ -513,6 +519,8 @@ export function CoresIDApp() {
       });
       setLastTxHash(tx);
       setLastTxLabel("Mint");
+      setStatus("Waiting for confirmation...");
+      await waitForTransactionReceipt(wagmiConfig, { hash: tx, chainId: CORESID_CHAIN_ID });
       setStatus("Minted! NFT leveled up on the core.");
       setNominatedStatus("linked");
       setLinkedCore(coreAddr);
@@ -956,51 +964,51 @@ export function CoresIDApp() {
           ) : null}
 
           {/* Summary bar */}
-          <div className="mb-4 flex justify-around rounded-2xl border border-[var(--line)] bg-[var(--card)] p-3 backdrop-blur-xl">
-            <div className="text-center">
-              <div className="text-lg font-bold text-[var(--foreground)]">{level}</div>
-              <div className="text-[10px] text-[var(--muted)]">Linked</div>
+          <div className="mb-4 flex items-stretch rounded-2xl border border-[var(--line)] bg-[var(--card)] p-1.5 backdrop-blur-xl">
+            <div className="flex flex-1 justify-around items-center">
+              <div className="text-center">
+                <div className="text-lg font-bold text-[var(--foreground)]">{level}</div>
+                <div className="text-[10px] text-[var(--muted)]">Linked</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-[var(--foreground)]">{coreState.pendingCount}</div>
+                <div className="text-[10px] text-[var(--muted)]">Pending</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-[var(--foreground)]">{slotsFree}</div>
+                <div className="text-[10px] text-[var(--muted)]">Free</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-[var(--foreground)]">5</div>
+                <div className="text-[10px] text-[var(--muted)]">Max</div>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-[var(--foreground)]">{coreState.pendingCount}</div>
-              <div className="text-[10px] text-[var(--muted)]">Pending</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-[var(--foreground)]">{slotsFree}</div>
-              <div className="text-[10px] text-[var(--muted)]">Free</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-[var(--foreground)]">5</div>
-              <div className="text-[10px] text-[var(--muted)]">Max</div>
-            </div>
+            <button
+              type="button"
+              onClick={() => setRefreshKey((k) => k + 1)}
+              className="flex-shrink-0 self-center rounded-full p-2 text-[var(--muted)] transition-all hover:bg-[var(--line)] hover:text-[var(--foreground)] active:rotate-45"
+              title="Refresh seed list"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10" />
+                <polyline points="1 20 1 14 7 14" />
+                <path d="M23 10a9 9 0 0 0-15.7-5.3L4 8" />
+                <path d="M1 14a9 9 0 0 0 15.7 5.3L20 16" />
+              </svg>
+            </button>
           </div>
 
           {/* Seed List — only show when there are seeds to manage */}
           {(linkedSeeds.length > 0 || pendingSeeds.length > 0) && (
             <>
-              <div className="mb-2 flex items-start justify-between">
-                <div>
-                  <p className="text-sm text-[var(--foreground)]">
-                    <strong>Seed List</strong> <span className="text-[var(--muted)]">|</span>{" "}
-                    <span className="font-normal text-[var(--muted)]">Track and manage your seeds</span>
-                  </p>
-                  <p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">
-                    Drag the seed number right (&rarr;) to manage
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setRefreshKey((k) => k + 1)}
-                  className="flex-shrink-0 rounded-full p-2 text-[var(--muted)] transition-all hover:bg-[var(--line)] hover:text-[var(--foreground)] active:rotate-45"
-                  title="Refresh seed list"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="23 4 23 10 17 10" />
-                    <polyline points="1 20 1 14 7 14" />
-                    <path d="M23 10a9 9 0 0 0-15.7-5.3L4 8" />
-                    <path d="M1 14a9 9 0 0 0 15.7 5.3L20 16" />
-                  </svg>
-                </button>
+              <div className="mb-2">
+                <p className="text-sm text-[var(--foreground)]">
+                  <strong>Seed List</strong> <span className="text-[var(--muted)]">|</span>{" "}
+                  <span className="font-normal text-[var(--muted)]">Track and manage your seeds</span>
+                </p>
+                <p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">
+                  Drag the seed number right (&rarr;) to manage
+                </p>
               </div>
 
               <div className="mb-4 flex flex-col gap-2 select-none">
@@ -1094,12 +1102,19 @@ export function CoresIDApp() {
                           {slotNum}
                         </div>
 
-                        {/* Address */}
+                        {/* Address + status */}
                         <div
-                          className="flex-1 min-w-0 text-sm font-mono font-semibold text-[var(--foreground)] pointer-events-none"
+                          className="flex-1 min-w-0 pointer-events-none"
                           style={{ position: "relative", zIndex: 1 }}
                         >
-                          {shortenAddress(addr)}
+                          <div className="text-xs font-mono font-semibold text-[var(--foreground)] truncate">
+                            {shortenAddress(addr)}
+                          </div>
+                          <div className={`text-[10px] font-medium ${
+                            type === "linked" ? "text-emerald-600" : "text-amber-600"
+                          }`}>
+                            {type === "linked" ? "Linked" : "Nominated"}
+                          </div>
                         </div>
                       </div>
                     </div>
