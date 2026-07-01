@@ -8,11 +8,12 @@ import {
   http,
 } from "wagmi";
 import { baseSepolia } from "wagmi/chains";
-import { baseAccount, injected } from "wagmi/connectors";
+import { baseAccount, injected, walletConnect } from "wagmi/connectors";
+
+export const WC_PROJECT_ID = "c46c1ecc93170d80c743ae6d3f8f70d2";
 
 export const wagmiConfig = createConfig({
   chains: [baseSepolia],
-  // Allow EIP-6963 discovery so injected wallets (Rabby, MetaMask, ...) appear.
   multiInjectedProviderDiscovery: true,
   connectors: [
     baseAccount({
@@ -20,6 +21,7 @@ export const wagmiConfig = createConfig({
       appLogoUrl: "https://coresid.vercel.app/baselogomid.png",
     }),
     injected({ shimDisconnect: true }),
+    walletConnect({ projectId: WC_PROJECT_ID, showQrModal: true }),
   ],
   ssr: true,
   storage: createStorage({

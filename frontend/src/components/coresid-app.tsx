@@ -658,15 +658,62 @@ export function CoresIDApp() {
               >
                 {isSigningIn ? "Connecting..." : "Sign in with Base"}
               </button>
+
+              {/* EIP-6963 detected wallets */}
+              {connectors
+                .filter((c) => c.type === "injected" && c.id !== "injected")
+                .map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={async () => {
+                      setIsSigningIn(true);
+                      setErrorMsg(null);
+                      try {
+                        await connectAsync({ connector: c });
+                        const raw = await c.getProvider();
+                        if (raw) providerRef.current = raw as EIP1193Provider;
+                        setStatus("Connected.");
+                        setStep("onboarding");
+                      } catch (err) {
+                        setErrorMsg(errMessage(err));
+                      } finally {
+                        setIsSigningIn(false);
+                      }
+                    }}
+                    disabled={isSigningIn}
+                    className="h-12 w-full rounded-[1.1rem] border border-[var(--line)] bg-[var(--btn-bg)] px-4 text-sm font-semibold tracking-[0.02em] text-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {c.name || "Browser wallet"}
+                  </button>
+                ))}
+
+              {/* WalletConnect */}
               <button
                 type="button"
-                onClick={handleInjectedLogin}
-                disabled={isSigningIn || !injectedConnector}
+                onClick={async () => {
+                  const wc = connectors.find((c) => c.id === "walletConnect");
+                  if (!wc) { setErrorMsg("WalletConnect not available."); return; }
+                  setIsSigningIn(true);
+                  setErrorMsg(null);
+                  setStatus("Opening WalletConnect...");
+                  try {
+                    await connectAsync({ connector: wc });
+                    const raw = await wc.getProvider();
+                    if (raw) providerRef.current = raw as EIP1193Provider;
+                    setStatus("Connected.");
+                    setStep("onboarding");
+                  } catch (err) {
+                    setErrorMsg(errMessage(err));
+                    setStatus("");
+                  } finally {
+                    setIsSigningIn(false);
+                  }
+                }}
+                disabled={isSigningIn}
                 className="h-12 w-full rounded-[1.1rem] border border-[var(--line)] bg-[var(--btn-bg)] px-4 text-sm font-semibold tracking-[0.02em] text-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {injectedConnector
-                  ? "Connect browser wallet (Rabby / MetaMask)"
-                  : "No browser wallet detected"}
+                Connect via WalletConnect
               </button>
             </div>
           ) : isOnWrongChain ? (
