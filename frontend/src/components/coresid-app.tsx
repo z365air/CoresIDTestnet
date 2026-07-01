@@ -89,6 +89,22 @@ export function CoresIDApp() {
   const [seedCoreAddress, setSeedCoreAddress] = useState("");
   const [linkedCore, setLinkedCore] = useState<Address | null>(null);
 
+  // ---- dark mode ----
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark" || (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      setIsDark(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+  function toggleTheme() {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  }
+
   // ---- seed address validation ----
   const EVM_RE = /^0x[a-fA-F0-9]{40}$/;
   const validateNonce = useRef(0);
@@ -588,9 +604,37 @@ export function CoresIDApp() {
   // ---- render ----
   const slotsFree = 5 - (coreState.seedCount + coreState.pendingCount);
 
+  const themeButton = (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className="fixed top-3 right-3 z-50 flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--btn-bg)] text-[var(--muted)] shadow-sm transition-all hover:text-[var(--accent)]"
+      title={isDark ? "Light mode" : "Dark mode"}
+    >
+      {isDark ? (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      )}
+    </button>
+  );
+
   if (step === "connect") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[var(--surface)] px-4 py-6">
+        {themeButton}
         <div className="flex w-full max-w-sm flex-col items-center">
           <img
             src="/baselogomid.png"
@@ -618,7 +662,7 @@ export function CoresIDApp() {
                 type="button"
                 onClick={handleInjectedLogin}
                 disabled={isSigningIn || !injectedConnector}
-                className="h-12 w-full rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-semibold tracking-[0.02em] text-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="h-12 w-full rounded-[1.1rem] border border-[var(--line)] bg-[var(--btn-bg)] px-4 text-sm font-semibold tracking-[0.02em] text-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {injectedConnector
                   ? "Connect browser wallet (Rabby / MetaMask)"
@@ -651,10 +695,11 @@ export function CoresIDApp() {
 
     return (
       <main className="flex min-h-screen flex-col bg-[var(--surface)] px-4 py-6">
+        {themeButton}
         <div className="flex w-full max-w-sm flex-col mx-auto flex-1">
           {/* Wallet bar */}
           <div className="mb-10 flex items-center justify-between">
-            <span className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 py-2 text-xs font-mono font-semibold text-[var(--foreground)]">
+            <span className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--btn-bg)] px-4 py-2 text-xs font-mono font-semibold text-[var(--foreground)]">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               {shortenAddress(address ?? "0x")}
             </span>
@@ -673,7 +718,7 @@ export function CoresIDApp() {
                 className={`flex-1 h-13 rounded-2xl border-2 text-base font-bold tracking-wider transition-all duration-200 ${
                   selectedRole === tab
                     ? "border-transparent bg-[linear-gradient(135deg,#2953ff,#5ca4ff)] text-white shadow-[0_4px_20px_rgba(41,83,255,0.25)]"
-                    : "border-[var(--line)] bg-white text-[var(--muted)] hover:border-[var(--muted)]"
+                    : "border-[var(--line)] bg-[var(--btn-bg)] text-[var(--muted)] hover:border-[var(--muted)]"
                 }`}
               >
                 {tab === "core" ? "CORE" : "SEED"}
@@ -744,6 +789,7 @@ export function CoresIDApp() {
 
     return (
       <main className="flex min-h-screen flex-col bg-[var(--surface)] px-4 py-6">
+        {themeButton}
         <div className="flex w-full max-w-sm flex-col mx-auto flex-1">
 
           {/* Core address */}
@@ -761,7 +807,7 @@ export function CoresIDApp() {
 
           {/* NFT carousel (unchanged) */}
           {level >= 0 ? (
-            <div className="group relative mb-4 overflow-hidden rounded-[1.5rem] border border-[rgba(41,83,255,0.15)] bg-white shadow-[0_8px_40px_rgba(27,67,255,0.08)] transition-all">
+            <div className="group relative mb-4 overflow-hidden rounded-[1.5rem] border border-[rgba(41,83,255,0.15)] bg-[var(--card)] shadow-[0_8px_40px_rgba(27,67,255,0.08)] transition-all">
               <div
                 className="flex"
                 style={{
@@ -808,7 +854,7 @@ export function CoresIDApp() {
                     "noopener,noreferrer",
                   );
                 }}
-                className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 shadow backdrop-blur-sm transition-all hover:bg-white hover:shadow-md z-10"
+                className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--card)] shadow backdrop-blur-sm transition-all hover:bg-[var(--btn-bg)] hover:shadow-md z-10"
                 aria-label="Share on X"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current text-[var(--ink)]">
@@ -863,7 +909,7 @@ export function CoresIDApp() {
           ) : null}
 
           {/* Summary bar */}
-          <div className="mb-4 flex justify-around rounded-2xl border border-[var(--line)] bg-white/80 p-3 backdrop-blur-xl">
+          <div className="mb-4 flex justify-around rounded-2xl border border-[var(--line)] bg-[var(--card)] p-3 backdrop-blur-xl">
             <div className="text-center">
               <div className="text-lg font-bold text-[var(--foreground)]">{level}</div>
               <div className="text-[10px] text-[var(--muted)]">Linked</div>
@@ -960,7 +1006,7 @@ export function CoresIDApp() {
                   )}
 
                   <div
-                    className={`seed-card relative z-[1] flex items-center gap-3 rounded-xl border bg-white px-4 py-3.5 ${
+                    className={`seed-card relative z-[1] flex items-center gap-3 rounded-xl border bg-[var(--btn-bg)] px-4 py-3.5 ${
                       type === "empty" ? "border-[var(--line)]" : "border-[var(--line)]"
                     } ${type === "empty" ? "" : ""}`}
                     style={{ overflow: "hidden" }}
@@ -1034,7 +1080,7 @@ export function CoresIDApp() {
 
           {/* Nominate section (unchanged) */}
           {slotsFree > 0 && (
-            <div className="mb-4 rounded-2xl border border-[var(--line)] bg-white/80 p-4 backdrop-blur-xl">
+            <div className="mb-4 rounded-2xl border border-[var(--line)] bg-[var(--card)] p-4 backdrop-blur-xl">
               <p className="mb-3 text-sm font-semibold text-[var(--foreground)]">
                 Nominate Seeds
               </p>
@@ -1070,7 +1116,7 @@ export function CoresIDApp() {
                         <button
                           type="button"
                           onClick={() => removeInput(i)}
-                          className="mt-0 flex h-8 w-8 items-center justify-center self-start rounded-lg border border-red-200 bg-white/60 text-xs text-red-400"
+                          className="mt-0 flex h-8 w-8 items-center justify-center self-start rounded-lg border border-red-200 bg-[var(--card)] text-xs text-red-400"
                         >
                           &times;
                         </button>
@@ -1124,7 +1170,7 @@ export function CoresIDApp() {
             <button
               type="button"
               onClick={() => setStep("onboarding")}
-              className="w-full h-11 rounded-2xl border border-[var(--line)] bg-white text-sm font-semibold text-[var(--muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-blue-50"
+              className="w-full h-11 rounded-2xl border border-[var(--line)] bg-[var(--btn-bg)] text-sm font-semibold text-[var(--muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--hover-tint)]"
             >
               Go Back to Role Selection
             </button>
@@ -1135,9 +1181,10 @@ export function CoresIDApp() {
   }
 
   // ---- SEED VIEW ----
-  return (
-    <main className="flex min-h-screen flex-col bg-[var(--surface)] px-4 py-6">
-      <div className="flex w-full max-w-sm flex-col mx-auto flex-1">
+    return (
+      <main className="flex min-h-screen flex-col bg-[var(--surface)] px-4 py-6">
+        {themeButton}
+        <div className="flex w-full max-w-sm flex-col mx-auto flex-1">
 
         {/* Seed address */}
         <div className="mb-4">
@@ -1159,7 +1206,7 @@ export function CoresIDApp() {
           </div>
         ) : (
           <>
-            <div className="mb-4 rounded-2xl border border-[var(--line)] bg-white/80 p-4 backdrop-blur-xl">
+            <div className="mb-4 rounded-2xl border border-[var(--line)] bg-[var(--card)] p-4 backdrop-blur-xl">
               <p className="mb-3 text-sm font-semibold text-[var(--foreground)]">
                 Check your nomination
               </p>
@@ -1182,7 +1229,7 @@ export function CoresIDApp() {
             </div>
 
             {seedCoreAddress.length === 42 && nominatedStatus === "nominated" && (
-              <div className="mb-4 rounded-2xl border border-[var(--line)] bg-white/80 p-4 backdrop-blur-xl">
+              <div className="mb-4 rounded-2xl border border-[var(--line)] bg-[var(--card)] p-4 backdrop-blur-xl">
                 <p className="mb-3 text-sm font-semibold text-[var(--foreground)]">Accept the link</p>
                 <p className="mb-3 text-xs text-[var(--muted)]">
                   Mint to core:{" "}
@@ -1202,7 +1249,7 @@ export function CoresIDApp() {
             )}
 
             {status && (
-              <div className="mb-2 rounded-xl border border-[var(--line)] bg-white/60 p-3 text-center backdrop-blur-xl">
+              <div className="mb-2 rounded-xl border border-[var(--line)] bg-[var(--card)] p-3 text-center backdrop-blur-xl">
                 <p className="text-xs text-[var(--muted)]">{status}</p>
               </div>
             )}
@@ -1225,7 +1272,7 @@ export function CoresIDApp() {
           <button
             type="button"
             onClick={() => setStep("onboarding")}
-            className="w-full h-11 rounded-2xl border border-[var(--line)] bg-white text-sm font-semibold text-[var(--muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-blue-50"
+            className="w-full h-11 rounded-2xl border border-[var(--line)] bg-[var(--btn-bg)] text-sm font-semibold text-[var(--muted)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--hover-tint)]"
           >
             Go Back to Role Selection
           </button>

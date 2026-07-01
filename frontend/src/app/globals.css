@@ -8,6 +8,24 @@
   --muted: #5d698a;
   --line: rgba(27, 54, 166, 0.12);
   --accent: #2350ff;
+  --card: rgba(255, 255, 255, 0.8);
+  --btn-bg: #ffffff;
+  --hover-tint: rgba(35, 80, 255, 0.06);
+  --body-bg: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(244,248,255,0.92)), var(--surface);
+}
+
+.dark {
+  --background: #0a0f24;
+  --foreground: #e2e8f0;
+  --surface: #0a0f24;
+  --ink: #e2e8f0;
+  --muted: #8892b0;
+  --line: rgba(92, 154, 255, 0.15);
+  --accent: #5c9aff;
+  --card: rgba(20, 32, 64, 0.7);
+  --btn-bg: #162040;
+  --hover-tint: rgba(92, 154, 255, 0.12);
+  --body-bg: linear-gradient(180deg, rgba(10,15,36,0.92), rgba(20,32,64,0.95)), var(--surface);
 }
 
 @theme inline {
@@ -27,9 +45,7 @@ html {
 
 body {
   min-height: 100vh;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(244, 248, 255, 0.92)),
-    var(--surface);
+  background: var(--body-bg);
   color: var(--foreground);
   font-family: var(--font-sans);
 }
