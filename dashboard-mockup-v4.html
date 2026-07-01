@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Core Dashboard Mockup v4</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #f0f2ff 0%, #e8ecff 100%);
+  min-height: 100vh; display: flex; justify-content: center; padding: 24px 16px;
+}
+.phone {
+  width: 100%; max-width: 400px;
+  background: #f5f6fa;
+  border-radius: 32px;
+  box-shadow: 0 20px 60px rgba(27,67,255,0.10), 0 4px 16px rgba(0,0,0,0.04);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  min-height: 700px;
+}
+.mode-tabs {
+  display: flex; border-bottom: 1px solid #edeff6; background: white;
+  border-radius: 32px 32px 0 0;
+}
+.mode-tab {
+  flex: 1; padding: 16px 0 14px; text-align: center;
+  font-size: 14px; font-weight: 600; color: #b0b3c4;
+  cursor: pointer; transition: all 0.15s; border-bottom: 2px solid transparent;
+  background: none; border-top: none; border-left: none; border-right: none;
+  font-family: inherit;
+}
+.mode-tab:hover { color: #6b6f85; }
+.mode-tab.active { color: #2953ff; border-bottom-color: #2953ff; }
+.mode-tab .tab-icon { display: block; font-size: 18px; margin-bottom: 2px; }
+.content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.core-view { display: block; }
+.seed-view { display: none; }
+body.seed .core-view { display: none; }
+body.seed .seed-view { display: block; }
+.core-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.core-header h2 { font-size: 20px; font-weight: 700; color: #0c132e; }
+.core-header p { font-size: 11px; color: #8a8fa8; font-family: monospace; margin-top: 2px; }
+.carousel {
+  position: relative; border-radius: 20px; overflow: hidden; margin-bottom: 16px;
+  background: #0c132e; border: 1px solid rgba(41,83,255,0.12);
+  box-shadow: 0 8px 32px rgba(27,67,255,0.08);
+}
+.carousel img { width: 100%; display: block; }
+.carousel-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: rgba(255,255,255,0.6); font-size: 20px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; font-family: inherit;
+}
+.carousel-arrow:hover { background: rgba(255,255,255,0.9); color: #0c132e; }
+.carousel-arrow.left { left: 10px; }
+.carousel-arrow.right { right: 10px; }
+.summary {
+  display: flex; justify-content: space-around; margin-bottom: 16px;
+  background: white; border-radius: 16px; padding: 12px; border: 1px solid #edeff6;
+}
+.summary-item { text-align: center; }
+.summary-item .num { font-size: 18px; font-weight: 700; color: #0c132e; }
+.summary-item .label { font-size: 10px; color: #8a8fa8; margin-top: 2px; }
+.section-title {
+  font-size: 13px; font-weight: 700; color: #0c132e; margin-bottom: 10px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.section-title .hint { font-size: 10px; font-weight: 400; color: #b0b3c4; }
+.seed-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; user-select: none; }
+.seed-swipe-wrap { position: relative; border-radius: 14px; }
+
+/* ── Seed Card ── */
+.seed-card {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  background: white; border-radius: 14px; padding: 14px 16px;
+  border: 1px solid #edeff6;
+  overflow: hidden;
+}
+
+/* Address text sits behind the badge */
+.seed-card .addr {
+  font-size: 13px; font-family: monospace; font-weight: 600; color: #0c132e;
+  flex: 1; pointer-events: none; position: relative; z-index: 1;
+}
+
+/* Blur wipe overlay — revealed from left as badge moves */
+.seed-card .wipe-overlay {
+  position: absolute; inset: 0; z-index: 2;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background: rgba(239, 68, 68, 0.15);
+  display: flex; align-items: center;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.05s linear;
+  pointer-events: none;
+}
+.seed-card .wipe-overlay .wipe-text {
+  padding-left: 52px;
+  font-size: 11px; font-weight: 700; color: #dc2626;
+  letter-spacing: 0.03em; white-space: nowrap;
+}
+.seed-card .wipe-overlay.cancel-overlay {
+  background: rgba(245, 158, 11, 0.15);
+}
+.seed-card .wipe-overlay.cancel-overlay .wipe-text {
+  color: #b45309;
+}
+
+/* Slot badge — left side, on top, draggable */
+.seed-card .slot {
+  position: relative; z-index: 3;
+  flex-shrink: 0;
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  cursor: grab; touch-action: none;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  will-change: transform;
+}
+.seed-card .slot:active { cursor: grabbing; }
+.seed-card .slot.dragging {
+  transition: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  z-index: 4;
+}
+.seed-card .slot.filled { background: #2953ff; color: white; }
+.seed-card .slot.pending { background: #fbbf24; color: white; }
+.seed-card .slot.empty { background: #edeff6; color: #c4c7d6; cursor: default; box-shadow: none; }
+
+.seed-card.locked-row { opacity: 0.45; }
+.seed-card.locked-row .slot { cursor: default; box-shadow: none; }
+.seed-card.empty-row .addr { color: #c4c7d6; }
+.seed-card.empty-row .slot { cursor: default; box-shadow: none; }
+
+/* ── Nominate ── */
+.nominate-box {
+  background: white; border-radius: 16px; padding: 16px; border: 1px solid #edeff6; margin-bottom: 16px;
+}
+.nominate-box .hint { font-size: 11px; color: #8a8fa8; margin-bottom: 10px; line-height: 1.4; }
+.nominate-box input {
+  width: 100%; height: 36px; border-radius: 10px; border: 1px solid #e2e4ee;
+  padding: 0 12px; font-size: 12px; font-family: monospace; outline: none; margin-bottom: 6px;
+}
+.nominate-box input:focus { border-color: #2953ff; }
+.nominate-row { display: flex; gap: 8px; }
+.nominate-row button {
+  flex: 1; height: 36px; border-radius: 10px; border: none;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+}
+.btn-primary { background: linear-gradient(135deg,#2953ff,#5ca4ff); color: white; }
+.btn-primary:hover { box-shadow: 0 4px 16px rgba(41,83,255,0.25); }
+.btn-outline { background: white; border: 1px solid #e2e4ee !important; color: #0c132e; }
+.btn-outline:hover { border-color: #2953ff; color: #2953ff; }
+.tx-link { text-align: center; font-size: 11px; margin-bottom: 16px; }
+.tx-link a { color: #2953ff; text-decoration: underline; }
+.tx-link .check { color: #059669; }
+.bottom-actions { margin-top: auto; padding-top: 8px; }
+.btn-disconnect {
+  width: 100%; height: 44px; border-radius: 14px; border: 1px solid #e2e4ee;
+  background: white; font-size: 13px; font-weight: 600; color: #9ca3af;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-disconnect:hover { border-color: #fca5a5; color: #dc2626; background: #fef2f2; }
+
+/* ── Seed View ── */
+.seed-dashboard h2 { font-size: 20px; font-weight: 700; color: #0c132e; margin-bottom: 4px; }
+.seed-dashboard .seed-addr { font-size: 11px; color: #8a8fa8; font-family: monospace; margin-bottom: 20px; }
+.seed-status-card {
+  background: white; border-radius: 16px; padding: 20px; border: 1px solid #edeff6;
+  text-align: center; margin-bottom: 16px;
+}
+.seed-status-card.linked { border-color: #a7f3d0; background: #ecfdf5; }
+.seed-status-card .big-icon { font-size: 36px; margin-bottom: 8px; }
+.seed-status-card .status-text { font-size: 14px; font-weight: 600; color: #0c132e; margin-bottom: 4px; }
+.seed-status-card .status-sub { font-size: 11px; color: #6b7280; }
+.seed-status-card .core-link { font-family: monospace; font-size: 12px; color: #2953ff; margin-top: 8px; word-break: break-all; }
+
+/* ── Confirmation overlay ── */
+.confirm-overlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(12,19,46,0.6);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: white; border-radius: 24px; padding: 28px 24px 20px;
+  max-width: 340px; width: 100%; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.confirm-box .icon { font-size: 40px; margin-bottom: 10px; }
+.confirm-box h3 { font-size: 17px; font-weight: 700; color: #0c132e; margin-bottom: 6px; }
+.confirm-box p { font-size: 12px; color: #6b7280; margin-bottom: 20px; line-height: 1.5; }
+.confirm-box .addr-display {
+  font-family: monospace; font-size: 13px; font-weight: 600; color: #0c132e;
+  background: #f3f4f6; padding: 8px 12px; border-radius: 10px; margin-bottom: 20px; word-break: break-all;
+}
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions button {
+  flex: 1; height: 44px; border-radius: 14px; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+}
+.confirm-actions .btn-cancel { background: #f3f4f6; color: #6b7280; }
+.confirm-actions .btn-cancel:hover { background: #e5e7eb; }
+.confirm-actions .btn-confirm { background: #ef4444; color: white; }
+.confirm-actions .btn-confirm:hover { background: #dc2626; }
+.confirm-box .status-text { font-size: 12px; color: #059669; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" data-mode="core" onclick="switchMode('core')">
+      <span class="tab-icon">◈</span> Core
+    </button>
+    <button class="mode-tab" data-mode="seed" onclick="switchMode('seed')">
+      <span class="tab-icon">◇</span> Seed
+    </button>
+  </div>
+
+  <div class="content">
+
+    <!-- ============ CORE VIEW ============ -->
+    <div class="core-view">
+
+      <div class="core-header">
+        <div>
+          <h2>Core Dashboard</h2>
+          <p>0x98b7…f1Fa</p>
+        </div>
+        <span style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;">Token #42</span>
+      </div>
+
+      <div class="carousel">
+        <button class="carousel-arrow left" onclick="carousel(-1)">‹</button>
+        <img id="levelImg" src="frontend/public/metadata/level3.png" alt="Level 3" />
+        <button class="carousel-arrow right" onclick="carousel(1)">›</button>
+      </div>
+
+      <div class="summary">
+        <div class="summary-item"><div class="num">3</div><div class="label">Linked</div></div>
+        <div class="summary-item"><div class="num">1</div><div class="label">Pending</div></div>
+        <div class="summary-item"><div class="num">1</div><div class="label">Free</div></div>
+        <div class="summary-item"><div class="num">5</div><div class="label">Max</div></div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <p style="font-size:13px;color:#0c132e;">
+          <strong>Seed List</strong> <span style="color:#c4c7d6;">|</span> <span style="font-weight:400;color:#6b7280;">Track and manage your seeds</span>
+        </p>
+        <p style="font-size:10px;color:#b0b3c4;margin-top:4px;line-height:1.4;">Drag the seed number right (→) to manage</p>
+      </div>
+      <div class="seed-list">
+
+        <!-- Slot 1 — Linked -->
+        <div class="seed-swipe-wrap" data-action="revoke">
+          <div class="seed-card" data-addr="0xa1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8g9h0">
+            <div class="wipe-overlay"><span class="wipe-text">⟶ Revoke</span></div>
+            <div class="slot filled" data-slot="1">1</div>
+            <div class="addr">0xa1b2…g9h0</div>
+          </div>
+        </div>
+
+        <!-- Slot 2 — Linked -->
+        <div class="seed-swipe-wrap" data-action="revoke">
+          <div class="seed-card" data-addr="0xe5f6a7b8c9d0e1f2a3b4c5d6e7f8g9h0i1j2k3">
+            <div class="wipe-overlay"><span class="wipe-text">⟶ Revoke</span></div>
+            <div class="slot filled" data-slot="2">2</div>
+            <div class="addr">0xe5f6…k3l4</div>
+          </div>
+        </div>
+
+        <!-- Slot 3 — Linked -->
+        <div class="seed-swipe-wrap" data-action="revoke">
+          <div class="seed-card" data-addr="0x9i0ja3b4c5d6e7f8g9h0i1j2k3l4m5n6o7p8q9r">
+            <div class="wipe-overlay"><span class="wipe-text">⟶ Revoke</span></div>
+            <div class="slot filled" data-slot="3">3</div>
+            <div class="addr">0x9i0j…q9r0</div>
+          </div>
+        </div>
+
+        <!-- Slot 4 — Pending -->
+        <div class="seed-swipe-wrap" data-action="cancel">
+          <div class="seed-card" data-addr="0xm3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f">
+            <div class="wipe-overlay cancel-overlay"><span class="wipe-text">⟶ Cancel</span></div>
+            <div class="slot pending" data-slot="4">4</div>
+            <div class="addr">0xm3n4…e1f2</div>
+          </div>
+        </div>
+
+        <!-- Slot 5 — Empty -->
+        <div class="seed-swipe-wrap" data-action="">
+          <div class="seed-card empty-row">
+            <div class="slot empty" data-slot="5">5</div>
+            <div class="addr" style="color:#c4c7d6;">— empty —</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="nominate-box">
+        <div class="section-title" style="margin-bottom:6px;">Nominate Seeds</div>
+        <p class="hint">1 free slot. Enter an address to nominate.</p>
+        <input type="text" placeholder="Seed address (0x…)" />
+        <div class="nominate-row">
+          <button class="btn-primary">Nominate</button>
+        </div>
+      </div>
+
+      <div class="tx-link">
+        <span class="check">✓</span> Latest: Nominate tx confirmed — <a href="#">View on Basescan →</a>
+      </div>
+
+    </div>
+
+    <!-- ============ SEED VIEW ============ -->
+    <div class="seed-view">
+      <div class="seed-dashboard">
+        <h2>Seed Dashboard</h2>
+        <div class="seed-addr">0xk7l8…z9a0</div>
+        <div class="seed-status-card linked">
+          <div class="big-icon">🔗</div>
+          <div class="status-text">Linked to Core</div>
+          <div class="core-link">0x98b79Ff375ed9E785d9F09c7FE0394DbeF87f1Fa</div>
+          <div class="status-sub" style="margin-top:8px;">Accepted. Your core has leveled up.</div>
+        </div>
+        <div class="tx-link">
+          <span class="check">✓</span> Minted — <a href="#">View on Basescan →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="btn-disconnect" onclick="if(this.textContent.trim()==='Disconnect'){this.textContent='👋 Disconnected';this.style.borderColor='#d1fae5';this.style.color='#059669'}else{this.textContent='Disconnect';this.style.borderColor='#e2e4ee';this.style.color='#9ca3af'}">Disconnect</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Confirmation overlay -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="icon" id="confirmIcon">⚠️</div>
+    <h3 id="confirmTitle">Revoke Seed</h3>
+    <p id="confirmDesc">This will unlink this seed and decrease your Core level.</p>
+    <div class="addr-display" id="confirmAddr">0x…</div>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-confirm" id="confirmBtn" onclick="executeRevoke()">Revoke</button>
+    </div>
+    <div class="status-text" id="confirmStatus"></div>
+  </div>
+</div>
+
+<script>
+// ── Mode switching ──
+function switchMode(mode) {
+  document.body.className = mode === 'seed' ? 'seed' : '';
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+}
+
+// ── Carousel ──
+const levels = ['level0.png','level1.png','level2.png','level3.png','level4.png','level5.png'];
+let currentLevel = 3;
+function carousel(dir) {
+  currentLevel = Math.max(0, Math.min(5, currentLevel + dir));
+  document.getElementById('levelImg').src = 'frontend/public/metadata/' + levels[currentLevel];
+}
+
+// ── Badge drag (touch + mouse) ──
+const SWIPE_THRESHOLD = 80;
+const MAX_DRAG = 300;
+let dragState = null;
+
+function getX(e) {
+  if (e.touches) return e.touches[0].clientX;
+  return e.clientX;
+}
+
+function startDrag(e, slot) {
+  if (slot.classList.contains('empty') || slot.closest('.locked-row')) return;
+  e.preventDefault();
+  const card = slot.closest('.seed-card');
+  const wrap = card.closest('.seed-swipe-wrap');
+  const overlay = card.querySelector('.wipe-overlay');
+  const startX = getX(e);
+  dragState = { card, wrap, overlay, slot, startX, dx: 0 };
+  slot.classList.add('dragging');
+}
+
+function moveDrag(e) {
+  if (!dragState) return;
+  e.preventDefault();
+  const currentX = getX(e);
+  let dx = currentX - dragState.startX;
+  dx = Math.max(0, Math.min(MAX_DRAG, dx));
+  dragState.dx = dx;
+  dragState.slot.style.transform = `translateX(${dx}px)`;
+  const pct = (dx / MAX_DRAG) * 100;
+  dragState.overlay.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+}
+
+function endDrag(e) {
+  if (!dragState) return;
+  const { card, wrap, overlay, slot, dx } = dragState;
+  slot.classList.remove('dragging');
+  dragState = null;
+
+  if (dx >= SWIPE_THRESHOLD) {
+    const action = wrap.dataset.action;
+    const addr = card.dataset.addr || '';
+    if (action === 'revoke') showConfirm('revoke', addr);
+    else if (action === 'cancel') showConfirm('cancel', addr);
+  } else {
+    slot.style.transform = 'translateX(0)';
+    overlay.style.clipPath = 'inset(0 100% 0 0)';
+  }
+}
+
+document.querySelectorAll('.seed-card .slot').forEach(slot => {
+  slot.addEventListener('touchstart', e => startDrag(e, slot), { passive: false });
+  slot.addEventListener('touchmove', moveDrag, { passive: false });
+  slot.addEventListener('touchend', endDrag, { passive: false });
+  slot.addEventListener('mousedown', e => startDrag(e, slot));
+});
+
+document.addEventListener('mousemove', moveDrag);
+document.addEventListener('mouseup', endDrag);
+
+// ── Confirmation ──
+let pendingAction = null;
+let pendingAddr = '';
+
+function showConfirm(action, addr) {
+  pendingAction = action;
+  pendingAddr = addr;
+  const overlay = document.getElementById('confirmOverlay');
+  document.getElementById('confirmIcon').textContent = action === 'revoke' ? '⚠️' : '🔄';
+  document.getElementById('confirmTitle').textContent = action === 'revoke' ? 'Revoke Seed' : 'Cancel Nomination';
+  document.getElementById('confirmDesc').textContent = action === 'revoke'
+    ? 'This will unlink this seed and decrease your Core level.'
+    : 'This will cancel the pending nomination for this seed.';
+  const btn = document.getElementById('confirmBtn');
+  btn.textContent = action === 'revoke' ? 'Revoke' : 'Cancel Nomination';
+  btn.style.background = action === 'revoke' ? '#ef4444' : '#f59e0b';
+  document.getElementById('confirmAddr').textContent = addr;
+  document.getElementById('confirmStatus').textContent = '';
+  btn.disabled = false;
+  btn.onclick = executeRevoke;
+  overlay.classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  document.querySelectorAll('.seed-card .slot').forEach(s => {
+    s.style.transform = '';
+    s.classList.remove('dragging');
+  });
+  document.querySelectorAll('.wipe-overlay').forEach(o => {
+    o.style.clipPath = '';
+  });
+  pendingAction = null;
+  pendingAddr = '';
+}
+
+function executeRevoke() {
+  const status = document.getElementById('confirmStatus');
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  const isRevoke = pendingAction === 'revoke';
+  const label = isRevoke ? 'Revoking' : 'Cancelling';
+  const doneLabel = isRevoke ? '✓ Revoked successfully!' : '✓ Nomination cancelled!';
+  const doneColor = isRevoke ? '#ef4444' : '#f59e0b';
+  btn.textContent = label + '…';
+  status.textContent = '';
+  status.style.color = '#059669';
+  setTimeout(() => {
+    status.textContent = doneLabel;
+    status.style.color = doneColor;
+    btn.textContent = 'Done';
+    btn.disabled = false;
+    btn.onclick = () => closeConfirm();
+  }, 1500);
+}
+</script>
+
+</body>
+</html>

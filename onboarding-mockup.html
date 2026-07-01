@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Onboarding Mockup</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #f0f2ff 0%, #e8ecff 100%);
+  min-height: 100vh; display: flex; justify-content: center; padding: 24px 16px;
+}
+.phone {
+  width: 100%; max-width: 400px;
+  background: #f5f6fa;
+  border-radius: 32px;
+  box-shadow: 0 20px 60px rgba(27,67,255,0.10), 0 4px 16px rgba(0,0,0,0.04);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  min-height: 700px; padding: 40px 24px 32px;
+}
+
+/* ---- Wallet bar ---- */
+.wallet-bar {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px;
+}
+.wallet-bar .addr {
+  font-size: 12px; font-family: monospace; font-weight: 600; color: #0c132e;
+  background: white; padding: 6px 14px; border-radius: 20px; border: 1px solid #edeff6;
+}
+.wallet-bar .connected-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #059669; display: inline-block; margin-right: 6px;
+}
+
+/* ---- Tabs ---- */
+.tab-row {
+  display: flex; gap: 10px; margin-bottom: 32px;
+}
+.tab-btn {
+  flex: 1; height: 52px; border-radius: 16px; border: 2px solid #e2e4ee;
+  background: white; font-size: 16px; font-weight: 700; color: #b0b3c4;
+  cursor: pointer; transition: all 0.2s; font-family: inherit;
+  letter-spacing: 0.04em;
+}
+.tab-btn:hover { border-color: #c4c7d6; color: #8a8fa8; }
+.tab-btn.active {
+  background: linear-gradient(135deg, #2953ff, #5ca4ff);
+  border-color: transparent; color: white;
+  box-shadow: 0 4px 20px rgba(41,83,255,0.25);
+}
+
+/* ---- Logo area ---- */
+.logo-area {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; text-align: center;
+  transition: opacity 0.3s ease;
+}
+.logo-area.hidden { display: none; }
+.logo-area img { width: 160px; margin-bottom: 12px; }
+.logo-area .tagline { font-size: 12px; color: #b0b3c4; line-height: 1.5; }
+
+/* ---- Role card area ---- */
+.role-area {
+  flex: 1; display: none; align-items: center; justify-content: center;
+  flex-direction: column; text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+.role-area.visible { display: flex; }
+.role-area img { width: 100%; max-width: 280px; border-radius: 16px; }
+.role-area .role-label {
+  margin-top: 12px; font-size: 13px; font-weight: 600; color: #6b7280;
+  letter-spacing: 0.03em;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Continue button ---- */
+.continue-btn {
+  width: 100%; height: 50px; border-radius: 16px; border: none;
+  background: #edeff6; color: #c4c7d6; font-size: 15px; font-weight: 700;
+  cursor: default; transition: all 0.2s; font-family: inherit;
+  margin-bottom: 16px; letter-spacing: 0.02em;
+}
+.continue-btn.active {
+  background: linear-gradient(135deg, #2953ff, #5ca4ff);
+  color: white; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(41,83,255,0.25);
+}
+.continue-btn.active:hover {
+  box-shadow: 0 6px 28px rgba(41,83,255,0.35);
+}
+
+/* ---- Change wallet ---- */
+.change-wallet {
+  text-align: center;
+}
+.change-wallet button {
+  background: none; border: none; font-size: 12px; color: #b0b3c4;
+  cursor: pointer; text-decoration: underline; font-family: inherit;
+  transition: color 0.15s;
+}
+.change-wallet button:hover { color: #2953ff; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- Wallet bar -->
+  <div class="wallet-bar">
+    <span class="addr"><span class="connected-dot"></span>0x98b7…f1Fa</span>
+    <span style="font-size:10px;color:#059669;font-weight:600;">Connected</span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-row">
+    <button class="tab-btn" id="coreTab" onclick="selectTab('core')">CORE</button>
+    <button class="tab-btn" id="seedTab" onclick="selectTab('seed')">SEED</button>
+  </div>
+
+  <!-- Logo (shown when no tab selected) -->
+  <div class="logo-area" id="logoArea">
+    <img src="frontend/public/baselogomid.png" alt="Base Cores ID" />
+    <p class="tagline">Link your EOAs to your Core<br />with a leveling soulbound NFT</p>
+  </div>
+
+  <!-- Core card (shown when Core is selected) -->
+  <div class="role-area" id="coreRole">
+    <img src="frontend/public/images/CORE.png" alt="Core" />
+    <p class="role-label">I am a Core — I nominate seeds</p>
+  </div>
+
+  <!-- Seed card (shown when Seed is selected) -->
+  <div class="role-area" id="seedRole">
+    <img src="frontend/public/images/SEED.png" alt="Seed" />
+    <p class="role-label">I am a Seed — I accept nominations</p>
+  </div>
+
+  <!-- Continue -->
+  <button class="continue-btn" id="continueBtn" disabled>Continue</button>
+
+  <!-- Change wallet -->
+  <div class="change-wallet">
+    <button onclick="if(confirm('Go back to connect screen?')){}">← Change wallet</button>
+  </div>
+
+</div>
+
+<script>
+let selected = null;
+
+function selectTab(tab) {
+  const coreTab = document.getElementById('coreTab');
+  const seedTab = document.getElementById('seedTab');
+  const logoArea = document.getElementById('logoArea');
+  const coreRole = document.getElementById('coreRole');
+  const seedRole = document.getElementById('seedRole');
+  const continueBtn = document.getElementById('continueBtn');
+
+  if (selected === tab) {
+    // Deselect
+    selected = null;
+    coreTab.classList.remove('active');
+    seedTab.classList.remove('active');
+    logoArea.classList.remove('hidden');
+    coreRole.classList.remove('visible');
+    seedRole.classList.remove('visible');
+    continueBtn.classList.remove('active');
+    continueBtn.disabled = true;
+    return;
+  }
+
+  selected = tab;
+  coreTab.classList.toggle('active', tab === 'core');
+  seedTab.classList.toggle('active', tab === 'seed');
+  logoArea.classList.add('hidden');
+  coreRole.classList.toggle('visible', tab === 'core');
+  seedRole.classList.toggle('visible', tab === 'seed');
+  continueBtn.classList.add('active');
+  continueBtn.disabled = false;
+}
+</script>
+
+</body>
+</html>
