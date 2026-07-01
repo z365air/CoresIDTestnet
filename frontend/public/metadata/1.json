@@ -1,0 +1,10 @@
+{
+  "name": "CoresID — Level 1",
+  "description": "A Core wallet with 1 Seed linked. Level 1 of 5. Each new Seed levels up this soulbound NFT.",
+  "image": "https://coresid.vercel.app/metadata/level1.png",
+  "attributes": [
+    { "trait_type": "Level", "value": 1 },
+    { "trait_type": "Max Level", "value": 5 },
+    { "trait_type": "Seeds", "value": 1 }
+  ]
+}

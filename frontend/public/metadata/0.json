@@ -1,0 +1,10 @@
+{
+  "name": "CoresID — Level 0",
+  "description": "A Core wallet ready to link Seeds. Nominate your first Seed to reach Level 1.",
+  "image": "https://coresid.vercel.app/metadata/level0.png",
+  "attributes": [
+    { "trait_type": "Level", "value": 0 },
+    { "trait_type": "Max Level", "value": 5 },
+    { "trait_type": "Seeds", "value": 0 }
+  ]
+}
