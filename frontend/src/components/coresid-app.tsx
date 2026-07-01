@@ -1021,39 +1021,39 @@ export function CoresIDApp() {
 
                   return (
                     <div key={i} className="seed-swipe-wrap relative rounded-xl overflow-hidden">
-                      {/* Wipe overlay (behind card, revealed on drag) */}
                       <div
-                        className="wipe-overlay absolute inset-0 z-[2] pointer-events-none"
-                        style={{
-                          backdropFilter: "blur(6px)",
-                          WebkitBackdropFilter: "blur(6px)",
-                          background: type === "linked"
-                            ? "rgba(239,68,68,0.15)"
-                            : "rgba(245,158,11,0.15)",
-                          clipPath: "inset(0 100% 0 0)",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        <span
-                          style={{
-                            paddingLeft: "52px",
-                            fontSize: "11px",
-                            fontWeight: 700,
-                            color: type === "linked" ? (isDark ? "#ffffff" : "#dc2626") : (isDark ? "#ffffff" : "#b45309"),
-                            letterSpacing: "0.03em",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          &rarr; {type === "linked" ? "Revoke" : "Cancel Nomination"}
-                        </span>
-                      </div>
-
-                      <div
-                        className="seed-card relative z-[1] flex items-center gap-3 rounded-xl border border-[var(--line)] bg-[var(--btn-bg)] px-4 py-3.5"
+                        className="seed-card relative flex items-center gap-3 rounded-xl border border-[var(--line)] bg-[var(--btn-bg)] px-4 py-3.5"
                         style={{ overflow: "hidden" }}
                       >
-                        {/* Slot badge (drag handle) */}
+                        {/* Wipe overlay inside the card, below badge */}
+                        <div
+                          className="wipe-overlay absolute inset-0 z-[1] pointer-events-none"
+                          style={{
+                            backdropFilter: "blur(6px)",
+                            WebkitBackdropFilter: "blur(6px)",
+                            background: type === "linked"
+                              ? "rgba(239,68,68,0.15)"
+                              : "rgba(245,158,11,0.15)",
+                            clipPath: "inset(0 100% 0 0)",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span
+                            style={{
+                              paddingLeft: "52px",
+                              fontSize: "11px",
+                              fontWeight: 700,
+                              color: type === "linked" ? (isDark ? "#ffffff" : "#dc2626") : (isDark ? "#ffffff" : "#b45309"),
+                              letterSpacing: "0.03em",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            &rarr; {type === "linked" ? "Revoke" : "Cancel Nomination"}
+                          </span>
+                        </div>
+
+                        {/* Slot badge (drag handle) — top layer */}
                         <div
                           className={`slot flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg text-sm font-bold select-none ${
                             type === "linked"
@@ -1070,7 +1070,7 @@ export function CoresIDApp() {
                           onPointerDown={(e) => {
                             const slot = e.currentTarget;
                             const card = slot.closest('.seed-card') as HTMLElement;
-                            const overlay = card?.parentElement?.querySelector('.wipe-overlay') as HTMLElement;
+                            const overlay = card?.querySelector('.wipe-overlay') as HTMLElement;
                             if (!card || !overlay) return;
                             slot.setPointerCapture(e.pointerId);
                             slot.style.transition = "none";
@@ -1105,7 +1105,7 @@ export function CoresIDApp() {
                         {/* Address + status */}
                         <div
                           className="flex-1 min-w-0 pointer-events-none"
-                          style={{ position: "relative", zIndex: 1 }}
+                          style={{ position: "relative", zIndex: 0 }}
                         >
                           <div className="text-xs font-mono font-semibold text-[var(--foreground)] truncate">
                             {shortenAddress(addr)}
