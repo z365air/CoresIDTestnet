@@ -18,7 +18,7 @@ export const wagmiConfig = createConfig({
   connectors: [
     baseAccount({
       appName: "Base Cores ID",
-      appLogoUrl: "https://coresid.vercel.app/baselogomid.png",
+      appLogoUrl: typeof window !== "undefined" ? `${window.location.origin}/baselogomid.png` : "https://coresidtestnet.vercel.app/baselogomid.png",
     }),
     injected({ shimDisconnect: true }),
     walletConnect({ projectId: WC_PROJECT_ID, showQrModal: true }),

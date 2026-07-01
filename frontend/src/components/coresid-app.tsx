@@ -902,7 +902,7 @@ export function CoresIDApp() {
                 type="button"
                 onClick={() => {
                   const text = `I have connected ${level} Seeds to my Core on Base Cores ID\nYou can now link your EOAs and agents to your @baseapp account`;
-                  const shareUrl = `https://coresid.vercel.app/share/${level}`;
+                  const shareUrl = `${window.location.origin}/share/${level}`;
                   window.open(
                     `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`,
                     "_blank",
@@ -1040,7 +1040,7 @@ export function CoresIDApp() {
                             paddingLeft: "52px",
                             fontSize: "11px",
                             fontWeight: 700,
-                            color: type === "linked" ? "#dc2626" : "#b45309",
+                            color: type === "linked" ? (isDark ? "#ffffff" : "#dc2626") : (isDark ? "#ffffff" : "#b45309"),
                             letterSpacing: "0.03em",
                             whiteSpace: "nowrap",
                           }}
