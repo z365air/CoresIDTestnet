@@ -1045,7 +1045,7 @@ export function CoresIDApp() {
                             whiteSpace: "nowrap",
                           }}
                         >
-                          &rarr; {type === "linked" ? "Revoke" : "Cancel"}
+                          &rarr; {type === "linked" ? "Revoke" : "Cancel Nomination"}
                         </span>
                       </div>
 
